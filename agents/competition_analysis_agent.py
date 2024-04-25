@@ -84,4 +84,4 @@ class CompetitorAnalyst:
                 response_schema=SWOTAnalysis, message=msg, repetetion_penalty=0.46
             )
             final_report[competitor] = swot_report
-        return final_report
+        return json.loads(json.dumps(final_report))
