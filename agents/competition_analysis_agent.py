@@ -1,5 +1,7 @@
 import json
 import openai
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
 from schemas import LoS, SWOTAnalysis
 
 client = openai.OpenAI(
@@ -39,15 +41,15 @@ class CompetitorAnalyst:
             message = [
                 {
                     "role": "system",
-                    "content": "You are a helpful and experienced market analyst. Use your intelligence the provided context(if needed) to complete the task.",
+                    "content": "You are a helpful and experienced market analyst. Use your intelligence the provided context(if needed) to complete the task, dont make things up. Answer in valid JSON",
                 },
                 {
                     "role": "user",
-                    "content": f"SWOT analysis on {kwargs['competitor_name']} as a business.\n\nCONTEXT :\n{kwargs['context']}",
+                    "content": f"Tell Market share, sales number, growth etc. and SWOT analysis on {kwargs['competitor_name']} as a business.\n\nCONTEXT :\n{kwargs['context']}",
                 },
             ]
         else:
-            message = [None, None]
+            return [None, None]
         return message
 
     def get_response(self, response_schema, message, repetetion_penalty):
@@ -63,9 +65,13 @@ class CompetitorAnalyst:
         content = json.loads(response.choices[0].message.content)
         return content
 
-    def do_analysis(self):
-        industry = self.industry
+    def remove_stopwords(self, text):
+        stop_words = set(stopwords.words("english"))
+        words = word_tokenize(text)
+        filtered_text = [word for word in words if word.lower() not in stop_words]
+        return " ".join(filtered_text)
 
+    def do_analysis(self, industry):
         # get competitors name
         message = self.get_message(
             task="competitors-name", industry=industry, context=""
@@ -74,14 +80,37 @@ class CompetitorAnalyst:
             response_schema=LoS, message=message, repetetion_penalty=0.5
         )["los"]
         final_report = {}
-
-        # do SWOT analysis for each competitor
         for competitor in competitors_names[:4]:
+
+            queries = [
+                f"Market share, sales number, global presence, of {competitor} in {industry} industry.",
+                f"SWOT Strength, weakness, opportunity and threat of {competitor} in {industry} industry.",
+            ]
+
+            content = self.remove_stopwords(WebTool().fetch_content(texts=queries))[
+                : 4096 * 4
+            ]
+
+            clean_content = client.chat.completions.create(
+                model="meta-llama/Llama-3-8b-chat-hf",
+                messages=[
+                    {
+                        "role": "system",
+                        "content": "You are an information retriever and summarizer,ignore everything you know, return only the factual information regarding the QUERY into a maximum of 500-600 words. Output should be concise chunks of paragraphs or tables or both, ignore links, using the RAW TEXT",
+                    },
+                    {
+                        "role": "user",
+                        "content": f"QUERY :\n\n{','.join(queries)}\n\n RAW TEXT :\n\n{content}",
+                    },
+                ],
+                frequency_penalty=0.16,
+            )
+
             msg = self.get_message(
-                task="swot-analysis", competitor_name=competitor, context=""
+                task="swot-analysis", competitor_name=competitor, context=clean_content
             )
             swot_report = self.get_response(
                 response_schema=SWOTAnalysis, message=msg, repetetion_penalty=0.46
             )
             final_report[competitor] = swot_report
-        return json.loads(json.dumps(final_report))
+        return final_report

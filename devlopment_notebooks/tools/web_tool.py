@@ -17,7 +17,7 @@ for proxy in data:
         sock_proxies.append(proxy[:-1])
 
 header = {
-    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"
+    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
 }
 
 #ddgs = DDGS(headers=header,proxy=random.choice(http_proxies),timeout=10)
@@ -53,10 +53,13 @@ class WebTool:
 
         return content
 
-    def fetch_content(self, text):
+    def fetch_content(self, texts):
         content = ""
-        urls = self.get_urls(text)
-        
+        urls = []
+        for text in texts:
+            urls += self.get_urls(text)
+            time.sleep(0.25)
+        urls = set(urls)
         for e, url in enumerate(urls):
             content += f"Source {e+1}\n\n"
             content += self.get_content(url)
