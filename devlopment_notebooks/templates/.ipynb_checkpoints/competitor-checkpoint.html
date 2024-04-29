@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Competitor Analysis</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        h1 {
+            margin-top: 0;
+            color: #007bff; /* Blue color */
+        }
+        h3 {
+            margin-top: 0;
+            color: #007bff; /* Blue color */
+        }
+        .swot-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .swot-table th, .swot-table td {
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+        .swot-table th {
+            background-color: #007bff; /* Blue color */
+            color: #fff; /* White text */
+            font-weight: bold;
+        }
+        .swot-table td {
+            background-color: #f8f9fa; /* Light gray color */
+        }
+        .swot-points {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            text-align: left;
+        }
+        .swot-points li {
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+{% for competitor in competitors %}
+  <div class="container">
+      <div class="section">
+        <h1>{{}}</h1>
+          <p><strong>Description:</strong>{{report.competitor.description}}</p>
+          <p><strong>Timeline:</strong></p>
+          <ul>
+            {% for timeline_point in timeline_points %}
+              <li>{{timeline_point}}</li>
+            {% endfor %}
+          </ul>
+      </div> 
+      <div class="section">
+          <h3>SWOT Analysis</h3>
+          <table class="swot-table">
+              <tbody>
+                  <tr>
+                      <th>Strengths</th>
+                      <th>Weaknesses</th>
+                  </tr>
+                  <tr>
+                      <td>
+                          <ul class="swot-points">
+                            {% for strength in strengths %}
+                              <li>{{ strength }}</li>
+                            {% endfor %}
+                          </ul>
+                      </td>
+                      <td>
+                          <ul class="swot-points">
+                            {% for weakness in weaknesses %}
+                              <li>{{ weakness }}</li>
+                            {% endfor %} 
+                              <!-- Add more weakness points as needed -->
+                          </ul>
+                      </td>
+                  </tr>
+                  <tr>
+                      <th>Opportunities</th>
+                      <th>Threats</th>
+                  </tr>
+                  <tr>
+                      <td>
+                          <ul class="swot-points">
+                            {% for opportunity in opportunities %}
+                              <li>{{ opportunity }}</li>
+                            {% endfor %} 
+                              <!-- Add more opportunity points as needed -->
+                          </ul>
+                      </td>
+                      <td>
+                          <ul class="swot-points">
+                            {% for threat in threats %}
+                              <li>{{ threat }}</li>
+                            {% endfor %} 
+                              <!-- Add more threat points as needed -->
+                          </ul>
+                      </td>
+                  </tr>
+              </tbody>
+          </table>
+      </div>
+
+      <div class="section">
+          <h3>Products Offered</h3>
+          <p>Here are some of the products offered by Competitor A:</p>
+          <ul>
+              <li>Product 1</li>
+              <li>Product 2</li>
+              <li>Product 3</li>
+              <!-- Add more products as needed -->
+          </ul>
+      </div>
+  </div>
+{% endfor %}
+</body>
+</html>
+
