@@ -6,7 +6,7 @@ from typing import List
 # Create clientkey
 client = openai.OpenAI(
     base_url="https://api.together.xyz/v1",
-    api_key="85e577a7bd21434e2d3f1ab2bd7a2750c6db5eb7ddf09cce131655911c93f622",
+    api_key="",
 )
 
 

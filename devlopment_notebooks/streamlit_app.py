@@ -7,10 +7,12 @@ st.title("🧑‍🔬 Researcher Pro")
 
 col1, col2 = st.columns(2)
 
-if "submit" not in st.session_state:
-    st.session_state.submit = False
+st.session_state.submit = False
 if "generated" not in st.session_state:
     st.session_state.generated = False
+if "data" not in st.session_state:
+    st.session_state.data = {"dummy": ["dummy"]}
+
 with col1:
 
     user_input = st.text_input("Business/Industry", "Smart home appliances")
@@ -23,7 +25,10 @@ with col1:
 
     if st.session_state.submit == True:
 
-        if st.session_state.generated == False:
+        if (
+            st.session_state.generated == False
+            or list(st.session_state.data.keys())[0] != user_input
+        ):
             with st.spinner(text="Please wait..."):
                 st.session_state.data = DynamicInput().run(user_input)
             st.session_state.generated = True
